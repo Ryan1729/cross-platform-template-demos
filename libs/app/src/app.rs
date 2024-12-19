@@ -1,10 +1,14 @@
-use game::Splat;
 use gfx::{Commands};
 use platform_types::{command, sprite, unscaled, Button, Input, Speaker, SFX};
 pub use platform_types::StateParams;
 
+enum DemoState {
+    Fireflies(fireflies::State),
+    Splat(splat::State),
+}
+
 pub struct State {
-    pub game_state: game::State,
+    pub demo_state: DemoState,
     pub commands: Commands,
     pub input: Input,
     pub speaker: Speaker,
@@ -21,11 +25,10 @@ impl State {
         // not the macro.
         features::log(&format!("{:?}", seed));
 
-        let mut game_state = game::State::new(seed);
-        //game_state.add_splat();
+        let mut demo_state = DemoState::Fireflies(fireflies::State::new(seed));
 
         Self {
-            game_state,
+            demo_state,
             commands: Commands::default(),
             input: Input::default(),
             speaker: Speaker::default(),
@@ -39,7 +42,7 @@ impl platform_types::State for State {
         self.speaker.clear();
         update_and_render(
             &mut self.commands,
-            &mut self.game_state,
+            &mut self.demo_state,
             self.input,
             &mut self.speaker,
         );
@@ -64,40 +67,32 @@ impl platform_types::State for State {
     }
 }
 
-fn update(state: &mut game::State, input: Input, speaker: &mut Speaker) {
-    if input.gamepad != <_>::default() {
-        state.add_splat();
-        speaker.request_sfx(SFX::CardPlace);
-    }
-}
-
-#[inline]
-fn render(commands: &mut Commands, state: &game::State) {
-    for &Splat { kind, x, y } in &state.splats {
-        commands.draw_card(kind, x, y);
-
-        commands.sspr(
-            sprite::XY {
-                x: sprite::X(0),
-                y: sprite::Y(64),
-            },
-            command::Rect::from_unscaled(unscaled::Rect {
-                x: x.saturating_sub(unscaled::W(16)),
-                y: y.saturating_sub(unscaled::H(16)),
-                w: unscaled::W(16),
-                h: unscaled::H(16),
-            })
-        );
-    }
-}
-
 #[inline]
 fn update_and_render(
     commands: &mut Commands,
-    state: &mut game::State,
+    state: &mut DemoState,
     input: Input,
     speaker: &mut Speaker,
 ) {
-    update(state, input, speaker);
-    render(commands, state);
+    use DemoState::*;
+
+    if input.pressed_this_frame(Button::SELECT) {
+        match state {
+            Fireflies(s) => {
+                *state = Splat(splat::State::new(xs::new_seed(&mut s.rng)));
+            }
+            Splat(s) => {
+                *state = Fireflies(fireflies::State::new(xs::new_seed(&mut s.rng)));
+            }
+        }
+    }
+
+    match state {
+        Fireflies(s) => {
+            fireflies::update_and_render(commands, s, input, speaker);
+        }
+        Splat(s) => {
+            splat::update_and_render(commands, s, input, speaker);
+        }
+    }
 }

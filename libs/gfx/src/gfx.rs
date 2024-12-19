@@ -118,6 +118,25 @@ impl Commands {
             colour,
         );
     }
+
+    pub fn draw_point(
+        &mut self,
+        xy: unscaled::XY,
+        colour: ARGB
+    ) {
+        self.commands.push(
+            Command {
+                sprite_xy: <_>::default(),
+                rect: Rect::from_unscaled(unscaled::Rect {
+                    x: xy.x,
+                    y: xy.y,
+                    w: platform_types::unscaled::W(1),
+                    h: platform_types::unscaled::H(1),
+                }),
+                colour_override: colour,
+            }
+        );
+    }
 }
 
 pub mod card {

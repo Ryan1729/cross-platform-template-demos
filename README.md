@@ -1,8 +1,8 @@
-# rename-me
+# Demos
 
-This is a template, designed to make using a particular method of cross-platform (desktop and web) development, in a new project, faster.
+This is a collection of demos for [this template](https://github.com/Ryan1729/cross-platform-template), meant to show off how to use it.
 
-See below for build/run instructions, and see the `checklist` script for how to get started modifying a copy of the template to suit your needs.
+See below for build/run instructions.
 
 ## WASM version
 
@@ -16,7 +16,7 @@ rustup target add wasm32-unknown-unknown
 ```
 3. Start dev server:
 ```
-cargo run-wasm rename-me --release
+cargo run-wasm demos --release
 ```
 4. Visit `http://localhost:8000` with your browser.
 
@@ -24,7 +24,7 @@ cargo run-wasm rename-me --release
 
 These extra features can be adding then to the run-wasm `features` flag. Note that these are comma separated. For instance to activate `invariant-checking` and `logging` you can run:
 ```
-cargo run-wasm rename-me --release --features invariant-checking,logging
+cargo run-wasm demos --release --features invariant-checking,logging
 ```
 ## Desktop
 
@@ -36,11 +36,11 @@ The desktop version attempts to be cross platform. Only Linux and Windows have b
 
 2. Build via cargo
 ```
-cargo build --release --bin rename-me
+cargo build --release --bin demos
 ```
 3. Run the executable
 ```
-./target/release/rename-me
+./target/release/demos
 ```
 
 #### Linux specific notes
@@ -55,7 +55,7 @@ sudo apt install libasound2-dev pkg-config
 If you don't care about sound you can build with the enabled-by-default `"non-web-sound"` feature flag turned off:
 
 ```
-cargo build --release --bin rename-me --no-default-features
+cargo build --release --bin demos --no-default-features
 ```
 
 ##### Wayland
@@ -63,7 +63,7 @@ As of this writing, [a library that this program uses does not allow specifying 
 For now, you can run the executable with the `WINIT_UNIX_BACKEND` environment variable set to `"x11"` as a workaround.
 
 ```
-WINIT_UNIX_BACKEND="x11" ./target/release/rename-me
+WINIT_UNIX_BACKEND="x11" ./target/release/demos
 ```
 
 ## Feature flags

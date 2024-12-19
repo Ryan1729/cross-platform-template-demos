@@ -1,0 +1,21 @@
+[package]
+name = "fireflies"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "./src/fireflies.rs"
+
+[dependencies]
+
+[dependencies.gfx]
+path = "../gfx"
+
+[dependencies.models]
+path = "../models"
+
+[dependencies.platform_types]
+path = "../platform_types"
+
+[dependencies.xs]
+path = "../xs"

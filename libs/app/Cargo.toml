@@ -9,8 +9,11 @@ path = "src/app.rs"
 
 [dependencies]
 
-[dependencies.game]
-path = "../game"
+[dependencies.fireflies]
+path = "../fireflies"
+
+[dependencies.splat]
+path = "../splat"
 
 [dependencies.gfx]
 path = "../gfx"
@@ -20,6 +23,9 @@ path = "../features"
 
 [dependencies.platform_types]
 path = "../platform_types"
+
+[dependencies.xs]
+path = "../xs"
 
 [features]
 default = []
