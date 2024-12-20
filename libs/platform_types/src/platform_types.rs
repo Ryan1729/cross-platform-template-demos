@@ -241,6 +241,44 @@ pub mod unscaled {
         }
     }
 
+    impl From<X> for f32 {
+        fn from(x: X) -> Self {
+            x.0.into()
+        }
+    }
+
+    impl TryFrom<f32> for X {
+        type Error = ();
+
+        fn try_from(f: f32) -> Result<Self, Self::Error> {
+            use std::num::FpCategory::*;
+
+            match f.classify() {
+                Zero | Normal | Subnormal => Ok(Self(f as Inner)),
+                Nan | Infinite => Err(()),
+            }
+        }
+    }
+
+    impl From<Y> for f32 {
+        fn from(y: Y) -> Self {
+            y.0.into()
+        }
+    }
+
+    impl TryFrom<f32> for Y {
+        type Error = ();
+
+        fn try_from(f: f32) -> Result<Self, Self::Error> {
+            use std::num::FpCategory::*;
+
+            match f.classify() {
+                Zero | Normal | Subnormal => Ok(Self(f as Inner)),
+                Nan | Infinite => Err(()),
+            }
+        }
+    }
+
     #[derive(Clone, Copy, Default, Debug, PartialEq, Eq)]
     pub struct XY {
         pub x: X,

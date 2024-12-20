@@ -1,6 +1,5 @@
-use models::{Card, gen_card};
 use gfx::{Commands};
-use platform_types::{colours, command, sprite, unscaled, Button, Input, Speaker, SFX};
+use platform_types::{colours, command, unscaled, Input, Speaker};
 use xs::{Xs, Seed};
 
 fn xs_xy(rng: &mut Xs) -> unscaled::XY {
@@ -53,9 +52,35 @@ fn update(state: &mut State, input: Input, speaker: &mut Speaker) {
 
     for &mut Particle { ref mut at, ref mut target } in &mut state.particles {
         if at != target {
-            *at = *target;
-            break
+            // TODO store start and accumulate a 0.0-1.0 value
+            // TODO easing function based on accumulated value
+            let t_x = 0.5;
+            let t_y = 0.5;
+            at.x = <_>::try_from(
+                lerp(at.x.into(), t_x, target.x.into())
+            ).unwrap_or(at.x);
+            at.y = <_>::try_from(
+                lerp(at.y.into(), t_y, target.y.into())
+            ).unwrap_or(at.y);
         }
+    }
+}
+
+fn lerp(a: f32, t: f32, b: f32) -> f32 {
+    a * (1. - t) + b * t
+}
+
+#[cfg(test)]
+mod lerp_works {
+    use super::*;
+
+    #[test]
+    fn on_these_examples() {
+        // floating point espilon blah blah blah
+        // We can just be exact, until that becomes an issue.
+        assert_eq!(lerp(4., 1./4., 8.), 5.);
+        assert_eq!(lerp(4., -1./4., 8.), 3.);
+        assert_eq!(lerp(4., 5./4., 8.), 9.);
     }
 }
 
