@@ -13,7 +13,8 @@ const PARTICLE_COUNT: usize = 1024;
 
 #[derive(Clone, Default)]
 pub struct Particle {
-    pub at: unscaled::XY,
+    pub start: unscaled::XY,
+    pub frac: f32,
     pub target: unscaled::XY,
 }
 
@@ -30,8 +31,11 @@ impl State {
         let mut particles = Vec::with_capacity(PARTICLE_COUNT);
 
         for i in 0..PARTICLE_COUNT {
+            let start = xs_xy(&mut rng);
+
             particles.push(Particle {
-                at: xs_xy(&mut rng),
+                start,
+                target: command::UNSCALED_CENTER_XY,
                 .. <_>::default()
             })
         }
@@ -50,18 +54,11 @@ fn update(state: &mut State, input: Input, speaker: &mut Speaker) {
         return
     }
 
-    for &mut Particle { ref mut at, ref mut target } in &mut state.particles {
-        if at != target {
-            // TODO store start and accumulate a 0.0-1.0 value
-            // TODO easing function based on accumulated value
-            let t_x = 0.5;
-            let t_y = 0.5;
-            at.x = <_>::try_from(
-                lerp(at.x.into(), t_x, target.x.into())
-            ).unwrap_or(at.x);
-            at.y = <_>::try_from(
-                lerp(at.y.into(), t_y, target.y.into())
-            ).unwrap_or(at.y);
+    for &mut Particle { ref mut frac, .. } in &mut state.particles {
+        if *frac >= 0.0 && *frac < 1.0 {
+            *frac += 1./256.;
+        } else {
+            *frac = 1.;
         }
     }
 }
@@ -86,7 +83,16 @@ mod lerp_works {
 
 #[inline]
 fn render(commands: &mut Commands, state: &State) {
-    for &Particle { at, target } in &state.particles {
+    for &Particle { start, frac, target } in &state.particles {
+        let at = unscaled::XY {
+            x: <_>::try_from(
+                lerp(start.x.into(), frac, target.x.into())
+            ).unwrap_or(target.x),
+            y: <_>::try_from(
+                lerp(start.y.into(), frac, target.y.into())
+            ).unwrap_or(target.y),
+        };
+
         commands.draw_point(at, colours::RED);
         commands.draw_point(target, colours::BLUE);
     }
