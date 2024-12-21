@@ -247,16 +247,20 @@ pub mod unscaled {
         }
     }
 
+    pub fn const_try_x_from_f32(f: f32) -> Result<X, ()> {
+        use std::num::FpCategory::*;
+
+        match f.classify() {
+            Zero | Normal | Subnormal => Ok(X(f as Inner)),
+            Nan | Infinite => Err(()),
+        }
+    }
+
     impl TryFrom<f32> for X {
         type Error = ();
 
         fn try_from(f: f32) -> Result<Self, Self::Error> {
-            use std::num::FpCategory::*;
-
-            match f.classify() {
-                Zero | Normal | Subnormal => Ok(Self(f as Inner)),
-                Nan | Infinite => Err(()),
-            }
+            const_try_x_from_f32(f)
         }
     }
 
@@ -266,16 +270,38 @@ pub mod unscaled {
         }
     }
 
+    pub fn const_try_y_from_f32(f: f32) -> Result<Y, ()> {
+        use std::num::FpCategory::*;
+
+        match f.classify() {
+            Zero | Normal | Subnormal => Ok(Y(f as Inner)),
+            Nan | Infinite => Err(()),
+        }
+    }
+
     impl TryFrom<f32> for Y {
         type Error = ();
 
         fn try_from(f: f32) -> Result<Self, Self::Error> {
-            use std::num::FpCategory::*;
+            const_try_y_from_f32(f)
+        }
+    }
 
-            match f.classify() {
-                Zero | Normal | Subnormal => Ok(Self(f as Inner)),
-                Nan | Infinite => Err(()),
-            }
+    pub fn const_try_w_from_f32(f: f32) -> Result<W, ()> {
+        use std::num::FpCategory::*;
+
+        match f.classify() {
+            Zero | Normal | Subnormal => Ok(W(f as Inner)),
+            Nan | Infinite => Err(()),
+        }
+    }
+
+    pub fn const_try_h_from_f32(f: f32) -> Result<H, ()> {
+        use std::num::FpCategory::*;
+
+        match f.classify() {
+            Zero | Normal | Subnormal => Ok(H(f as Inner)),
+            Nan | Infinite => Err(()),
         }
     }
 
